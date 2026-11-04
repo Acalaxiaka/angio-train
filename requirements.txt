@@ -1,0 +1,12 @@
+# torch / torchvision 由 setup.bat 单独安装 CUDA 版（torch==2.5.1 torchvision==0.20.1, cu121 或 cu118）
+timm==1.0.11
+huggingface_hub>=0.24
+safetensors>=0.4
+numpy>=1.26,<2.2
+pandas>=2.1
+pillow>=10.4
+scikit-learn>=1.4
+matplotlib>=3.8
+onnx>=1.16
+onnxruntime>=1.18
+pydicom>=3.0

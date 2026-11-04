@@ -1,0 +1,13 @@
+name: selftest
+on: [push, workflow_dispatch]
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -r requirements.txt
+      - run: python selftest.py
+        env: { PYTHONIOENCODING: utf-8 }
