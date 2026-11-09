@@ -1,0 +1,69 @@
+手动下载 PyTorch（pip 仍然很慢时用）
+================================
+
+适用：setup.bat 卡在官方源、或国内镜像也失败时。
+需要：已运行过一次 setup.bat（至少创建了 venv），或先手动建好 venv。
+
+一、先停掉慢速安装
+----------------
+1. 关掉正在跑的黑色窗口（或在窗口里按 Ctrl+C）。
+2. 删除本目录下的 venv 文件夹（整个删掉）。
+   可选：顺手清 pip 缓存，在资源管理器地址栏输入 %LOCALAPPDATA%\pip\Cache 删掉里面的内容。
+3. 用新版 angio-train（v1.0.1）的 setup.bat 重跑；或继续下面手动步骤。
+
+二、浏览器下载 wheel（选你的 Python 版本）
+--------------------------------------
+先在命令行看版本：
+  py -3.11 -V
+  或  python -V
+记住是 3.10 / 3.11 / 3.12 中的哪一个。
+
+推荐从阿里云下（一般比官方快很多）：
+
+【Python 3.11】（推荐）
+  torch:
+  https://mirrors.aliyun.com/pytorch-wheels/cu121/torch-2.5.1+cu121-cp311-cp311-win_amd64.whl
+  torchvision:
+  https://mirrors.aliyun.com/pytorch-wheels/cu121/torchvision-0.20.1+cu121-cp311-cp311-win_amd64.whl
+
+【Python 3.12】
+  https://mirrors.aliyun.com/pytorch-wheels/cu121/torch-2.5.1+cu121-cp312-cp312-win_amd64.whl
+  https://mirrors.aliyun.com/pytorch-wheels/cu121/torchvision-0.20.1+cu121-cp312-cp312-win_amd64.whl
+
+【Python 3.10】
+  https://mirrors.aliyun.com/pytorch-wheels/cu121/torch-2.5.1+cu121-cp310-cp310-win_amd64.whl
+  https://mirrors.aliyun.com/pytorch-wheels/cu121/torchvision-0.20.1+cu121-cp310-cp310-win_amd64.whl
+
+备选（南京大学镜像，同样文件名）：
+  https://mirrors.nju.edu.cn/pytorch/whl/cu121/
+  在页面里搜 torch-2.5.1+cu121-cp311...win_amd64.whl 和对应的 torchvision。
+
+把两个 .whl 下到本目录的 wheels\ 文件夹（没有就新建）。
+
+三、用本地 wheel 安装
+--------------------
+在本目录打开 cmd 或 PowerShell，执行：
+
+  py -3.11 -m venv venv
+  venv\Scripts\python.exe -m pip install -U pip -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
+  venv\Scripts\pip install wheels\torch-2.5.1+cu121-cp311-cp311-win_amd64.whl wheels\torchvision-0.20.1+cu121-cp311-cp311-win_amd64.whl
+  venv\Scripts\pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
+
+（若你是 3.12/3.10，把上面的 py -3.11 和 whl 文件名改成对应版本。）
+
+然后双击 setup.bat：它发现 CUDA 版 torch 已可用会跳过下载，只补依赖和权重检查。
+
+四、验证
+--------
+  venv\Scripts\python.exe -c "import torch; print(torch.__version__, torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else '')"
+
+应类似：2.5.1+cu121 True NVIDIA GeForce RTX 2060 SUPER
+
+五、setup.bat 镜像尝试顺序（v1.0.1）
+--------------------------------
+1. 阿里云  https://mirrors.aliyun.com/pytorch-wheels/cu121/
+2. 南京大学 https://mirrors.nju.edu.cn/pytorch/whl/cu121
+3. 上海交大 https://mirror.sjtu.edu.cn/pytorch-wheels/cu121/
+4. 官方    https://download.pytorch.org/whl/cu121（可能很慢）
+5. 阿里云 cu118（旧驱动兜底）
+其它 pip 包：清华 pypi → 阿里云 pypi。

@@ -5,3 +5,4 @@ weights/*.pth
 runs/
 synthetic_data/
 dist/
+wheels/

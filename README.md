@@ -5,12 +5,14 @@
 推荐硬件：Windows 10/11 64 位 + NVIDIA 显卡（已按 RTX 2060 Super 8GB / R7 5700X / 64GB 内存调参）。
 
 ## 下载
-在 [Releases](../../releases) 下载 `angio-train-v1.0.0-windows.zip`，解压到任意文件夹（建议路径不含空格）。
+在 [Releases](../../releases) 下载 `angio-train-v1.0.1-windows.zip`，解压到任意文件夹（建议路径不含空格）。
 压缩包已**内置 EfficientNet-B0 ImageNet 预训练权重**（`weights/efficientnet_b0.pth`，16MB）。如需 ResNet-50，另下载 `resnet50.pth` 放入 `weights/`。
 
 ## 使用步骤
 1. 安装 [Python 3.11](https://www.python.org/downloads/)（安装时勾选 **Add python.exe to PATH**），并确认 NVIDIA 驱动较新（≥ 531）。
-2. 双击 `setup.bat`（只需一次，约 10–30 分钟，下载约 3GB）：创建 `venv` 虚拟环境 → 安装 CUDA 版 PyTorch 2.5.1（官方 cu121 → 阿里云镜像 → cu118 依次尝试）→ 清华 pip 镜像安装其它依赖 → 检查权重。最后应显示 `CUDA 可用: True  NVIDIA GeForce RTX 2060 SUPER`。
+2. 双击 `setup.bat`（只需一次，约 10–30 分钟，下载约 3GB）：创建 `venv` 虚拟环境 → 安装 CUDA 版 PyTorch 2.5.1（**优先国内镜像**：阿里云 cu121 → 南大 → 上交 → 官方兜底 → 阿里云 cu118）→ 清华/阿里云 pip 安装其它依赖 → 检查权重。最后应显示 `CUDA 可用: True  NVIDIA GeForce RTX 2060 SUPER`。
+   - 若卡在官方源（几小时都下不完）：关掉窗口 → 删掉本目录 `venv` 文件夹 → 用本版 `setup.bat` 重跑。
+   - 仍慢：打开 `手动下载PyTorch.txt`，用浏览器从阿里云下 `.whl` 再本地 `pip install`。
 3. （可选）双击 `自测.bat`，用合成数据检查（最后显示 `RESULT: ALL PASS`）。
 4. 双击 `训练.bat`，把 angio-frames 输出文件夹拖进窗口回车，再输入结果文件夹（回车默认 `runs\exp1`）。黑色窗口每轮显示损失/准确率/宏 F1。
 5. 中途关闭没关系：再次运行 `训练.bat` 选同一结果文件夹，选 Y 即**续训**。
@@ -38,6 +40,17 @@ venv\Scripts\python predict.py -m runs\exp1 -i D:\new_frames -o runs\pred
 | `--workers` | Windows 4（缓存时 2） | DataLoader 进程数 |
 | `--resume` | — | 从结果文件夹 `last.pt` 续训 |
 | `--no-amp` / `--cpu` | — | 关闭混合精度 / 强制 CPU |
+
+## 国内镜像与慢速下载
+`setup.bat`（v1.0.1+）安装 PyTorch 时按下列顺序尝试，**官方源放在最后**：
+1. 阿里云 `mirrors.aliyun.com/pytorch-wheels/cu121/`
+2. 南京大学 `mirrors.nju.edu.cn/pytorch/whl/cu121`
+3. 上海交大 `mirror.sjtu.edu.cn/pytorch-wheels/cu121/`
+4. 官方 `download.pytorch.org/whl/cu121`（大陆常见仅百 KB/s，可中断）
+5. 阿里云 cu118（旧驱动）
+
+其它 pip 依赖：清华 `pypi.tuna.tsinghua.edu.cn` → 阿里云 `mirrors.aliyun.com/pypi`。
+手动浏览器下载与本地安装步骤见同目录 `手动下载PyTorch.txt`。
 
 ## 预训练权重（只需一次，之后离线）
 - 发布包已内置 `efficientnet_b0.pth`。若缺失，`setup.bat` 会运行 `download_weights.py`，**先试 hf-mirror.com（国内镜像）再试 huggingface.co**。
